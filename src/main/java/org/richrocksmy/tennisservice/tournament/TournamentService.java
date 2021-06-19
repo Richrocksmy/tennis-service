@@ -1,5 +1,6 @@
 package org.richrocksmy.tennisservice.tournament;
 
+import lombok.extern.slf4j.Slf4j;
 import org.richrocksmy.tennisservice.match.CreateMatchRequest;
 import org.richrocksmy.tennisservice.match.Match;
 import org.richrocksmy.tennisservice.match.MatchMapper;
@@ -10,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ApplicationScoped
 public class TournamentService {
 
@@ -21,6 +23,7 @@ public class TournamentService {
 
     @Transactional
     public UUID createTournament(final CreateTournamentRequest createTournamentRequest) {
+        log.debug("Creating tennis tournament");
         UUID tournamentId = UUID.randomUUID();
 
         Set<Match> matches = addTournamentIdAndMatchIdToMatches(tournamentId, createTournamentRequest.getMatches());
@@ -30,6 +33,7 @@ public class TournamentService {
             .matches(matches)
             .tournamentId(tournamentId).build().persist();
 
+        log.debug("Created tennis tournament - {}", tournamentId);
         return tournamentId;
     }
 

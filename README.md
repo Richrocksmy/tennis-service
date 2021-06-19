@@ -23,7 +23,7 @@ From the root of the project, run ```./gradlew clean build```
 
 ### Starting the service
 
-From the root of the project, run```./gradlew clean build```to compile and build. Then run ```docker-compose up```to
+From the root of the project, run```./gradlew clean build``` to compile and build. Then run ```docker-compose up``` to
 start the services.
 
 ### Consuming the service

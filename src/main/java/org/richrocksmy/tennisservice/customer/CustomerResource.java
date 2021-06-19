@@ -1,5 +1,6 @@
 package org.richrocksmy.tennisservice.customer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 import static org.richrocksmy.tennisservice.common.ResponseBuilder.createdResponse;
 
+@Slf4j
 @Path("/v1/customers")
 @Tag(name = "Customer Resource")
 public class CustomerResource {
@@ -30,30 +32,34 @@ public class CustomerResource {
     @POST
     @Operation(summary = "Create a new customer")
     public Response createCustomer(@Context final UriInfo uriInfo, final CreateCustomerRequest createCustomerRequest) {
+        log.debug("Received request to create customer");
         return createdResponse(uriInfo, customerService.createCustomer(createCustomerRequest));
     }
 
     @GET
     @Path("/{customerId}/matches")
-    @Operation(summary = "Retrieve all tennis matches licensed for particular customerId")
+    @Operation(summary = "Retrieve all tennis matches licensed for this customerId")
     public Set<MatchResponse> retrieveAllMatchesForCustomer(@PathParam final UUID customerId) {
+        log.debug("Received request to retrieve all matches for customer - {}", customerId);
         return customerService.retrieveAllMatchesForCustomer(customerId);
     }
 
     @PATCH
     @Path("/{customerId}/licence/match")
-    @Operation(summary = "Create a new tennis match licence for a particular customerId")
+    @Operation(summary = "Create a new tennis match licence for this customerId")
     public Response createLicenceForMatch(@Context final UriInfo uriInfo, @PathParam final UUID customerId,
                                           final CreateLicenceRequest createLicenceRequest) {
+        log.debug("Received request to create match licence for customer - {} for match - {}", customerId, createLicenceRequest.getEventId());
         customerService.createLicenceForMatch(customerId, createLicenceRequest);
         return createdResponse(uriInfo);
     }
 
     @PATCH
     @Path("/{customerId}/licence/tournament")
-    @Operation(summary = "Create a new tennis tournament licence for a particular customerId")
+    @Operation(summary = "Create a new tennis tournament licence for this customerId")
     public Response createLicenceForTournament(@Context final UriInfo uriInfo, @PathParam final UUID customerId,
                                                final CreateLicenceRequest createLicenceRequest) {
+        log.debug("Received request to create tournament licence for customer - {} for tournament - {}", customerId, createLicenceRequest.getEventId());
         customerService.createLicenceForTournament(customerId, createLicenceRequest);
         return createdResponse(uriInfo);
     }

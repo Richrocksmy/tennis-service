@@ -1,5 +1,6 @@
 package org.richrocksmy.tennisservice.customer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.richrocksmy.tennisservice.match.Match;
 import org.richrocksmy.tennisservice.match.MatchMapper;
 import org.richrocksmy.tennisservice.match.MatchResponse;
@@ -13,6 +14,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
+@Transactional
 @ApplicationScoped
 public class CustomerService {
 
@@ -22,19 +25,22 @@ public class CustomerService {
         this.matchMapper = matchMapper;
     }
 
-    @Transactional
     public UUID createCustomer(final CreateCustomerRequest createCustomerRequest) {
+        log.debug("Creating customer");
         Customer customer = Customer.builder()
             .companyName(createCustomerRequest.getCompanyName())
             .customerId(UUID.randomUUID()).build();
 
         customer.persist();
 
-        return customer.getCustomerId();
+        UUID customerId = customer.getCustomerId();
+        log.debug("Created customer - {}", customerId);
+
+        return customerId;
     }
 
-    @Transactional
     public Set<MatchResponse> retrieveAllMatchesForCustomer(final UUID customerId) {
+        log.debug("Retrieving all matches for customer - {}", customerId);
         Customer customer = (Customer) Customer.findByIdOptional(customerId).orElseThrow(NotFoundException::new);
 
         return customer.getMatches().stream()
@@ -42,16 +48,18 @@ public class CustomerService {
             .collect(Collectors.toSet());
     }
 
-    @Transactional
     public void createLicenceForMatch(final UUID customerId, final CreateLicenceRequest createLicenceRequest) {
+        log.debug("Creating match licence for customer - {}", customerId);
+
         Match match = (Match) Match.findByIdOptional(createLicenceRequest.getEventId()).orElseThrow(BadRequestException::new);
         Customer customer = (Customer) Customer.findByIdOptional(customerId).orElseThrow(NotFoundException::new);
 
         customer.addMatch(match);
     }
 
-    @Transactional
     public void createLicenceForTournament(final UUID customerId, final CreateLicenceRequest createLicenceRequest) {
+        log.debug("Creating tournament licence for customer - {}", customerId);
+
         Tournament tournament = (Tournament) Tournament.findByIdOptional(createLicenceRequest.getEventId())
             .orElseThrow(BadRequestException::new);
         Customer customer = (Customer) Customer.findByIdOptional(customerId).orElseThrow(NotFoundException::new);

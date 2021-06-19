@@ -1,9 +1,13 @@
 package org.richrocksmy.tennisservice.match;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.util.UUID;
 
+@Slf4j
+@Transactional
 @ApplicationScoped
 public class MatchService {
 
@@ -13,11 +17,13 @@ public class MatchService {
         this.matchMapper = matchMapper;
     }
 
-    @Transactional
     public UUID createMatch(final CreateMatchRequest createMatchRequest) {
+        log.debug("Creating new tennis match");
         Match match = matchMapper.toMatchBuilder(createMatchRequest).matchId(UUID.randomUUID()).build();
         match.persist();
 
-        return match.getMatchId();
+        UUID matchId = match.getMatchId();
+        log.debug("Created tennis match - {}", matchId);
+        return matchId;
     }
 }
