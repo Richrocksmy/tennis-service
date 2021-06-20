@@ -19,6 +19,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-smallrye-openapi'
     implementation 'io.quarkus:quarkus-hibernate-orm-panache'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
+    implementation 'io.quarkus:quarkus-jdbc-h2:2.0.0.CR3'
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
@@ -31,7 +32,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.11.1'
     testImplementation 'org.assertj:assertj-core:3.20.1'
-
 }
 
 group 'org.richrocksmy'
