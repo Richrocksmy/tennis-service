@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import javax.validation.Valid;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -25,7 +26,7 @@ public class MatchResource {
 
     @POST
     @Operation(summary = "Create a new tennis match")
-    public Response createMatch(@Context final UriInfo uriInfo, final CreateMatchRequest createMatchRequest) {
+    public Response createMatch(@Context final UriInfo uriInfo, @Valid final CreateMatchRequest createMatchRequest) {
         log.debug("Received request to create a new tennis match");
         return createdResponse(uriInfo, matchService.createMatch(createMatchRequest));
     }

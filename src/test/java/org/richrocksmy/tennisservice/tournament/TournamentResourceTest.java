@@ -13,7 +13,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
@@ -30,8 +32,9 @@ public class TournamentResourceTest {
     }
 
     @Test
-    public void testCreateTournamentEndpoint() {
-        when(tournamentService.createTournament(any())).thenReturn(UUID.randomUUID());
+    public void shouldReturn201AndLocationOnCreateTournament() {
+        UUID tournamentId = UUID.randomUUID();
+        when(tournamentService.createTournament(any())).thenReturn(tournamentId);
         CreateTournamentRequest createTournamentRequest = new CreateTournamentRequest();
         createTournamentRequest.setStartDate(ZonedDateTime.now());
 
@@ -44,7 +47,20 @@ public class TournamentResourceTest {
         given().contentType("application/json").body(jsonb.toJson(createTournamentRequest))
             .when().post("/v1/tournaments")
             .then()
-            .statusCode(201);
+            .statusCode(201)
+            .header("Location", format("http://localhost:8081/v1/tournaments/%s", tournamentId));
+
+        verify(tournamentService).createTournament(createTournamentRequest);
     }
 
+    @Test
+    public void shouldReturn400WhenRequestIsInvalid() {
+        CreateTournamentRequest createTournamentRequest = new CreateTournamentRequest();
+        createTournamentRequest.setStartDate(ZonedDateTime.now());
+
+        given().contentType("application/json").body(jsonb.toJson(createTournamentRequest))
+            .when().post("/v1/tournaments")
+            .then()
+            .statusCode(400);
+    }
 }

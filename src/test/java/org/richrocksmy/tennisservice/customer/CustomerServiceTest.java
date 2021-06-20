@@ -187,7 +187,7 @@ class CustomerServiceTest {
         verify(customer, times(3)).addMatch(any());
     }
 
-    private Set<Match> createMatches(final ZonedDateTime now) {
+    public Set<Match> createMatches(final ZonedDateTime now) {
         Match.MatchBuilder matchBuilder = Match.builder()
             .tournamentId(UUID.randomUUID())
             .startDate(now)
@@ -199,6 +199,7 @@ class CustomerServiceTest {
             matchBuilder.matchId(UUID.randomUUID()).build(),
             matchBuilder.matchId(UUID.randomUUID()).build());
     }
+
 }
 
 
