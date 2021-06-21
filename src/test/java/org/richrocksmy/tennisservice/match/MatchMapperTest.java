@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -29,6 +31,22 @@ class MatchMapperTest {
     }
 
     @Test
+    public void shouldMapToMatchBuilderAndNormalizeStartTimeToUtc() {
+        ZonedDateTime now = LocalDateTime.now().atZone(ZoneOffset.UTC);
+
+        CreateMatchRequest createMatchRequest = new CreateMatchRequest();
+        createMatchRequest.setPlayerA("PlayerA");
+        createMatchRequest.setPlayerB("PlayerB");
+        createMatchRequest.setStartDate(now);
+
+        Match match = new MatchMapper().toMatchBuilder(createMatchRequest).build();
+
+        assertThat(match.getPlayerA()).isEqualTo("PlayerA");
+        assertThat(match.getPlayerB()).isEqualTo("PlayerB");
+        assertThat(match.getStartDate()).isEqualTo(now);
+    }
+
+    @Test
     public void shouldMapToMatchResponse() {
         ZonedDateTime now = ZonedDateTime.now();
         UUID matchId = UUID.randomUUID();
@@ -37,8 +55,7 @@ class MatchMapperTest {
             .matchId(matchId)
             .playerA("PlayerA")
             .playerB("PlayerB")
-            .startDate(now)
-            .summary("Summary").build();
+            .startDate(now).build();
 
         MatchResponse matchResponse = new MatchMapper().toMatchResponse(match);
 
@@ -46,6 +63,5 @@ class MatchMapperTest {
         assertThat(matchResponse.getPlayerA()).isEqualTo("PlayerA");
         assertThat(matchResponse.getPlayerB()).isEqualTo("PlayerB");
         assertThat(matchResponse.getStartDate()).isEqualTo(now);
-        assertThat(matchResponse.getSummary()).isEqualTo("Summary");
     }
 }

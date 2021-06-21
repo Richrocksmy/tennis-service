@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
+import org.richrocksmy.tennisservice.customer.matchsummary.SummaryType;
 import org.richrocksmy.tennisservice.match.MatchResponse;
 
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -40,9 +42,10 @@ public class CustomerResource {
     @GET
     @Path("/{customerId}/matches")
     @Operation(summary = "Retrieve all tennis matches licensed for this customerId")
-    public Set<MatchResponse> retrieveAllMatchesForCustomer(@PathParam final UUID customerId) {
+    public Set<MatchResponse> retrieveAllMatchesForCustomer(@PathParam final UUID customerId,
+                                                            @QueryParam("summaryType") final SummaryType summaryType) {
         log.debug("Received request to retrieve all matches for customer - {}", customerId);
-        return customerService.retrieveAllMatchesForCustomer(customerId);
+        return customerService.retrieveAllMatchesForCustomer(customerId, summaryType);
     }
 
     @PATCH

@@ -2,6 +2,8 @@ package org.richrocksmy.tennisservice.match;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import static org.richrocksmy.tennisservice.common.DateTimeHelper.adjustTimeAndZoneToUtc;
+
 @ApplicationScoped
 public class MatchMapper {
 
@@ -9,7 +11,7 @@ public class MatchMapper {
         return Match.builder()
             .playerA(createMatchRequest.getPlayerA())
             .playerB(createMatchRequest.getPlayerB())
-            .startDate(createMatchRequest.getStartDate());
+            .startDate(adjustTimeAndZoneToUtc(createMatchRequest.getStartDate()));
     }
 
     public MatchResponse toMatchResponse(final Match match) {
@@ -17,7 +19,6 @@ public class MatchMapper {
             .matchId(match.getMatchId())
             .playerA(match.getPlayerA())
             .playerB(match.getPlayerB())
-            .startDate(match.getStartDate())
-            .summary(match.getSummary()).build();
+            .startDate(match.getStartDate()).build();
     }
 }

@@ -24,7 +24,6 @@ public class Match extends PanacheEntityBase {
     private ZonedDateTime startDate;
     private String playerA;
     private String playerB;
-    private String summary;
 
 }
 

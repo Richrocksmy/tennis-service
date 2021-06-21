@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class MatchResponse {

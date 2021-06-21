@@ -16,6 +16,7 @@ import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -116,7 +117,47 @@ public class CustomerResourceTest {
     }
 
     @Test
-    public void shouldReturn200AndAllMatchesForCustomer() {
+    public void shouldReturn200AndAllMatchesForCustomerWithPvPMatchSummary() {
+        UUID customerId = UUID.randomUUID();
+        Set<MatchResponse> matches = Set.of(MatchResponse.builder()
+            .matchId(UUID.randomUUID())
+            .startDate(ZonedDateTime.now())
+            .playerA("Player A")
+            .playerB("Player B")
+            .summary("Match Summary")
+            .build());
+
+        when(customerService.retrieveAllMatchesForCustomer(eq(customerId), any())).thenReturn(matches);
+
+        given()
+            .when().get(format("/v1/customers/%s/matches?summaryType=AvB", customerId))
+            .then()
+            .statusCode(200)
+            .body(containsString(jsonb.toJson(matches)));
+    }
+
+    @Test
+    public void shouldReturn200AndAllMatchesForCustomerWithPvPTimeMatchSummary() {
+        UUID customerId = UUID.randomUUID();
+        Set<MatchResponse> matches = Set.of(MatchResponse.builder()
+            .matchId(UUID.randomUUID())
+            .startDate(ZonedDateTime.now())
+            .playerA("Player A")
+            .playerB("Player B")
+            .summary("Match Summary")
+            .build());
+
+        when(customerService.retrieveAllMatchesForCustomer(eq(customerId), any())).thenReturn(matches);
+
+        given()
+            .when().get(format("/v1/customers/%s/matches?summaryType=AvBTime", customerId))
+            .then()
+            .statusCode(200)
+            .body(containsString(jsonb.toJson(matches)));
+    }
+
+    @Test
+    public void shouldReturn200AndAllMatchesForCustomerWithoutMatchSummary() {
         UUID customerId = UUID.randomUUID();
         Set<MatchResponse> matches = Set.of(MatchResponse.builder()
             .matchId(UUID.randomUUID())
@@ -125,7 +166,7 @@ public class CustomerResourceTest {
             .playerB("Player B")
             .build());
 
-        when(customerService.retrieveAllMatchesForCustomer(customerId)).thenReturn(matches);
+        when(customerService.retrieveAllMatchesForCustomer(eq(customerId), any())).thenReturn(matches);
 
         given()
             .when().get(format("/v1/customers/%s/matches", customerId))
@@ -133,4 +174,5 @@ public class CustomerResourceTest {
             .statusCode(200)
             .body(containsString(jsonb.toJson(matches)));
     }
+
 }

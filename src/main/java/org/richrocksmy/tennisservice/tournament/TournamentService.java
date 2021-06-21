@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.richrocksmy.tennisservice.common.DateTimeHelper.adjustTimeAndZoneToUtc;
+
 @Slf4j
 @ApplicationScoped
 public class TournamentService {
@@ -29,7 +31,7 @@ public class TournamentService {
         Set<Match> matches = addTournamentIdAndMatchIdToMatches(tournamentId, createTournamentRequest.getMatches());
 
         Tournament.builder()
-            .startDate(createTournamentRequest.getStartDate())
+            .startDate(adjustTimeAndZoneToUtc(createTournamentRequest.getStartDate()))
             .matches(matches)
             .tournamentId(tournamentId).build().persist();
 

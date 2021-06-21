@@ -2,8 +2,11 @@ package org.richrocksmy.tennisservice.customer;
 
 import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import io.quarkus.test.junit.mockito.InjectSpy;
 import org.junit.jupiter.api.Test;
+import org.richrocksmy.tennisservice.customer.matchsummary.PlayerVsPlayerMatchSummaryCreationStrategy;
+import org.richrocksmy.tennisservice.customer.matchsummary.SummaryType;
 import org.richrocksmy.tennisservice.match.Match;
 import org.richrocksmy.tennisservice.match.MatchMapper;
 import org.richrocksmy.tennisservice.match.MatchResponse;
@@ -31,6 +34,10 @@ class CustomerServiceTest {
 
     @InjectSpy
     private MatchMapper matchMapper;
+
+    @InjectMock
+    private PlayerVsPlayerMatchSummaryCreationStrategy playerVsPlayerMatchSummaryCreationStrategy
+        = mock(PlayerVsPlayerMatchSummaryCreationStrategy.class);
 
     @Inject
     private CustomerService customerService;
@@ -63,9 +70,7 @@ class CustomerServiceTest {
         PanacheMock.mock(Customer.class);
         when(Customer.findByIdOptional(any())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            customerService.retrieveAllMatchesForCustomer(UUID.randomUUID());
-        });
+        assertThrows(NotFoundException.class, () -> customerService.retrieveAllMatchesForCustomer(UUID.randomUUID(), SummaryType.AvB));
     }
 
     @Test
@@ -77,14 +82,21 @@ class CustomerServiceTest {
         when(customer.getMatches()).thenReturn(createMatches(now));
 
         when(Customer.findByIdOptional(any())).thenReturn(Optional.of(customer));
+        when(playerVsPlayerMatchSummaryCreationStrategy.getName()).thenReturn("Name");
+        when(playerVsPlayerMatchSummaryCreationStrategy.canCreateMatchSummary(SummaryType.AvB)).thenReturn(true);
+        when(playerVsPlayerMatchSummaryCreationStrategy.createMatchSummary(any())).thenReturn("Match Summary");
 
-        Set<MatchResponse> matchResponses = customerService.retrieveAllMatchesForCustomer(UUID.randomUUID());
+        Set<MatchResponse> matchResponses = customerService.retrieveAllMatchesForCustomer(UUID.randomUUID(), SummaryType.AvB);
 
         assertThat(matchResponses).hasSize(3);
-        assertThat(matchResponses).extracting("startDate", "playerA", "playerB", "Summary")
-            .contains(tuple(now, "PlayerA", "PlayerB", "Summary"),
-                      tuple(now, "PlayerA", "PlayerB", "Summary"),
-                      tuple(now, "PlayerA", "PlayerB", "Summary"));
+                    assertThat(matchResponses).extracting("startDate", "playerA", "playerB", "summary")
+            .contains(tuple(now, "PlayerA", "PlayerB", "Match Summary"),
+                      tuple(now, "PlayerA", "PlayerB", "Match Summary"),
+                      tuple(now, "PlayerA", "PlayerB", "Match Summary"));
+
+        verify(playerVsPlayerMatchSummaryCreationStrategy).getName();
+        verify(playerVsPlayerMatchSummaryCreationStrategy).canCreateMatchSummary(SummaryType.AvB);
+        verify(playerVsPlayerMatchSummaryCreationStrategy, times(3)).createMatchSummary(any());
     }
 
     @Test
@@ -192,8 +204,7 @@ class CustomerServiceTest {
             .tournamentId(UUID.randomUUID())
             .startDate(now)
             .playerA("PlayerA")
-            .playerB("PlayerB")
-            .summary("Summary");
+            .playerB("PlayerB");
 
         return Set.of(matchBuilder.matchId(UUID.randomUUID()).build(),
             matchBuilder.matchId(UUID.randomUUID()).build(),

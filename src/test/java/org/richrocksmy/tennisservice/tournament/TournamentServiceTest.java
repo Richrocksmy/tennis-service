@@ -2,14 +2,14 @@ package org.richrocksmy.tennisservice.tournament;
 
 import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectSpy;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.richrocksmy.tennisservice.match.CreateMatchRequest;
 import org.richrocksmy.tennisservice.match.Match;
-import org.richrocksmy.tennisservice.match.MatchMapper;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -25,16 +25,13 @@ import static org.mockito.Mockito.when;
 @QuarkusTest
 class TournamentServiceTest {
 
-    @InjectSpy
-    private MatchMapper matchMapper;
-
     @Inject
     private TournamentService tournamentService;
 
     @Test
     public void shouldCreateTournament() {
         CreateTournamentRequest createTournamentRequest = new CreateTournamentRequest();
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = LocalDateTime.now().atZone(ZoneOffset.UTC);
         createTournamentRequest.setStartDate(now);
         createTournamentRequest.setMatches(createCreateMatchRequests(now));
 
