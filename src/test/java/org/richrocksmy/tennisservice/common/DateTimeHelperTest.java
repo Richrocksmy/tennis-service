@@ -39,7 +39,7 @@ class DateTimeHelperTest {
     }
 
     @Test
-    public void shouldAdjustTimeAndZoneAheadOfUtcInDifferentDay() {
+    public void shouldAdjustTimeAndZoneAheadOfUtcInDifferentDayToUtc() {
         ZonedDateTime localZonedDateTime = LocalDateTime.of(2021, 06, 22, 8, 8, 00).atZone(ZoneId.of("Australia/Tasmania"));
         ZonedDateTime returnedUtcZonedDateTime = DateTimeHelper.adjustTimeAndZoneToUtc(localZonedDateTime);
         ZonedDateTime expectedUtcZonedDateTime = LocalDateTime.of(2021, 06, 21, 22, 8, 00).atZone(ZoneOffset.UTC);
